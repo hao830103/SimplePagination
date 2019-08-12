@@ -1,6 +1,6 @@
 # simple-pagination
 
-> A Vue.js project
+> Simple pigination component for selfuse
 
 ## Build Setup
 
