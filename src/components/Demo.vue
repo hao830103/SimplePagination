@@ -1,11 +1,15 @@
 <template>
   <div>
-    <h1>Demo Page</h1>
+    <h2>test pagination</h2>
+    <pagination />
   </div>
 </template>
 
 <script>
-export default {}
+
+export default {
+
+}
 </script>
 
 <style scoped></style>
