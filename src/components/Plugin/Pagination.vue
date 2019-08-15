@@ -1,37 +1,89 @@
 <template>
-  <div>
-    <h2>Default</h2>
-    <div class="pagination">
-      <ul>
-        <li @click="PrevPage" :class="{ active: CurrentPage === 1}">
-          <a>Prev</a>
-        </li>
-        <li
-          v-for="pageNum in MaxPage"
-          :key="pageNum"
-          @click="ChangePage(pageNum)"
-          :class="{ active: CurrentPage === pageNum}"
-        >
-          <a>{{ pageNum }}</a>
-        </li>
-        <li @click="NextPage" :class="{ active: CurrentPage === MaxPage}">
-          <a>Next</a>
-        </li>
-      </ul>
-    </div>
+  <div class="pagination">
+    <ul>
+      <li @click="FirstPage" :class="{ active: CurrentPage === 1}" v-if="FirsLastButton">
+        <a>{{FirstPageText}}</a>
+      </li>
+      <li @click="PrevPage" :class="{ active: CurrentPage === 1}">
+        <a>Prev</a>
+      </li>
+      <li @click="FirstPage" v-show="(CurrentPage >= HiddenPageBase.Min)&&(!FirsLastButton)">
+        <a>1</a>
+      </li>
+      <li class="disabled" v-show="(CurrentPage > HiddenPageBase.Min)&&(!FirsLastButton)">
+        <a>...</a>
+      </li>
+      <li
+        v-for="pageNum in PageRange"
+        :key="pageNum"
+        @click="ChangePage(pageNum)"
+        :class="{ active: CurrentPage === pageNum}"
+      >
+        <a>{{ pageNum }}</a>
+      </li>
+      <li class="disabled" v-show="(CurrentPage < HiddenPageBase.Max)&&(!FirsLastButton)">
+        <a>...</a>
+      </li>
+      <li @click="LastPage" v-show="(CurrentPage <= HiddenPageBase.Max)&&(!FirsLastButton)">
+        <a>{{MaxPage}}</a>
+      </li>
+      <li @click="NextPage" :class="{ active: CurrentPage === MaxPage}">
+        <a>Next</a>
+      </li>
+      <li @click="LastPage" :class="{ active: CurrentPage === MaxPage}" v-if="FirsLastButton">
+        <a>{{LastPageText}}</a>
+      </li>
+    </ul>
   </div>
 </template>
 <script>
 export default {
+  props: { FirsLastButton: { 'default': false, type: Boolean }, MaxPage: { type: Number } },
   data: function () {
     return {
-      MaxPage: 7,
-      CurrentPage: 1
+      FirstPageText: '<<',
+      LastPageText: '>>',
+      PageRange: [],
+      CurrentPage: 1,
+      ShowenPages: 5,
+      HiddenPageBase: {
+        Max: 0,
+        Min: 0
+      }
     }
+  },
+  mounted: function () {
+    const base = Math.ceil(this.ShowenPages / 2)
+    this.HiddenPageBase.Min = base + 1
+    this.HiddenPageBase.Max = this.MaxPage - base
+    this.SetPageRange()
   },
   methods: {
     ChangePage: function (pageNum) {
       this.CurrentPage = pageNum
+      this.SetPageRange()
+    },
+    SetPageRange: function () {
+      let result = []
+      if (this.CurrentPage < this.HiddenPageBase.Min) {
+        for (let i = 1; i <= 1 + (this.ShowenPages - 1); i++) {
+          result.push(i)
+        }
+      } else if (this.CurrentPage > this.HiddenPageBase.Max) {
+        for (let i = this.MaxPage - (this.ShowenPages - 1); i <= this.MaxPage; i++) {
+          result.push(i)
+        }
+      } else {
+        const base = Math.floor(this.ShowenPages / 2)
+        for (let i = base; i >= 1; i--) {
+          result.push(this.CurrentPage - i)
+        }
+        result.push(this.CurrentPage)
+        for (let i = 1; i <= base; i++) {
+          result.push(this.CurrentPage + i)
+        }
+      }
+      this.PageRange = result
     },
     PrevPage: function () {
       if (this.CurrentPage !== 1) {
@@ -41,6 +93,16 @@ export default {
     NextPage: function () {
       if (this.CurrentPage !== this.MaxPage) {
         this.ChangePage(this.CurrentPage + 1)
+      }
+    },
+    FirstPage: function () {
+      if (this.CurrentPage !== 1) {
+        this.ChangePage(1)
+      }
+    },
+    LastPage: function () {
+      if (this.CurrentPage !== this.MaxPage) {
+        this.ChangePage(this.MaxPage)
       }
     }
   }
@@ -128,48 +190,5 @@ ul {
 }
 .pagination-right {
   text-align: right;
-}
-.pager {
-  margin-left: 0;
-  margin-bottom: 18px;
-  list-style: none;
-  text-align: center;
-  *zoom: 1;
-}
-.pager:before,
-.pager:after {
-  display: table;
-  content: '';
-}
-.pager:after {
-  clear: both;
-}
-.pager li {
-  display: inline;
-}
-.pager a {
-  display: inline-block;
-  padding: 5px 14px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  -webkit-border-radius: 15px;
-  -moz-border-radius: 15px;
-  border-radius: 15px;
-}
-.pager a:hover {
-  text-decoration: none;
-  background-color: #f5f5f5;
-}
-.pager .next a {
-  float: right;
-}
-.pager .previous a {
-  float: left;
-}
-.pager .disabled a,
-.pager .disabled a:hover {
-  color: #999999;
-  background-color: #fff;
-  cursor: default;
 }
 </style>
