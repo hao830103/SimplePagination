@@ -2,11 +2,11 @@
   <div>
     <div class="DemoBlock">
       <h2>Default</h2>
-      <pagination :MaxPage="12" />
+      <pagination :MaxPage="6" />
     </div>
     <div class="DemoBlock">
       <h2>With First & Last Button</h2>
-      <pagination :FirsLastButton="true" :MaxPage="12" />
+      <pagination :FirsLastButton="true" :MaxPage="6" />
     </div>
   </div>
 </template>

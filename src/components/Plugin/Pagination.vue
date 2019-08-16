@@ -1,36 +1,48 @@
 <template>
-  <div class="pagination">
-    <ul>
-      <li @click="FirstPage" :class="{ active: CurrentPage === 1}" v-if="FirsLastButton">
+  <div :class="OuterDivClass">
+    <ul :class="UlClass">
+      <li @click="FirstPage" v-if="FirsLastButton" :class="FirstPageBtnClass">
         <a>{{FirstPageText}}</a>
       </li>
-      <li @click="PrevPage" :class="{ active: CurrentPage === 1}">
-        <a>Prev</a>
+      <li @click="PrevPage" :class="PrevPageBtnClass">
+        <a>{{PrevPageText}}</a>
       </li>
-      <li @click="FirstPage" v-show="(CurrentPage >= HiddenPageBase.Min)&&(!FirsLastButton)">
+      <li
+        @click="FirstPage"
+        v-if="(CurrentPage >= HiddenPageBase.Min)&&(!FirsLastButton)&&(this.MaxPage > (this.ShowenPages+1))"
+      >
         <a>1</a>
       </li>
-      <li class="disabled" v-show="(CurrentPage > HiddenPageBase.Min)&&(!FirsLastButton)">
+      <li
+        :class="OmittedPageClass"
+        v-show="(CurrentPage > HiddenPageBase.Min)&&(!FirsLastButton)&&(this.MaxPage > (this.ShowenPages+1))"
+      >
         <a>...</a>
       </li>
       <li
         v-for="pageNum in PageRange"
         :key="pageNum"
         @click="ChangePage(pageNum)"
-        :class="{ active: CurrentPage === pageNum}"
+        :class="CurrentPage === pageNum ? ActiveClass:''"
       >
         <a>{{ pageNum }}</a>
       </li>
-      <li class="disabled" v-show="(CurrentPage < HiddenPageBase.Max)&&(!FirsLastButton)">
+      <li
+        :class="OmittedPageClass"
+        v-show="(CurrentPage < HiddenPageBase.Max)&&(!FirsLastButton)&&(this.MaxPage > (this.ShowenPages+1))"
+      >
         <a>...</a>
       </li>
-      <li @click="LastPage" v-show="(CurrentPage <= HiddenPageBase.Max)&&(!FirsLastButton)">
+      <li
+        @click="LastPage"
+        v-if="(CurrentPage <= HiddenPageBase.Max)&&(!FirsLastButton)&&(this.MaxPage > (this.ShowenPages+1))"
+      >
         <a>{{MaxPage}}</a>
       </li>
-      <li @click="NextPage" :class="{ active: CurrentPage === MaxPage}">
-        <a>Next</a>
+      <li @click="NextPage" :class="NextPageBtnClass">
+        <a>{{NextPageText}}</a>
       </li>
-      <li @click="LastPage" :class="{ active: CurrentPage === MaxPage}" v-if="FirsLastButton">
+      <li @click="LastPage" v-if="FirsLastButton" :class="LastPageBtnClass">
         <a>{{LastPageText}}</a>
       </li>
     </ul>
@@ -38,7 +50,20 @@
 </template>
 <script>
 export default {
-  props: { FirsLastButton: { 'default': false, type: Boolean }, MaxPage: { type: Number } },
+  props: {
+    FirsLastButton: { 'default': false, type: Boolean },
+    MaxPage: { type: Number },
+    ActiveClass: { 'default': 'active', type: String },
+    PrevPageText: { 'default': 'Prev', type: String },
+    NextPageText: { 'default': 'Next', type: String },
+    PrevPageBtnClass: { 'default': '', type: String },
+    NextPageBtnClass: { 'default': '', type: String },
+    OuterDivClass: { 'default': 'pagination', type: String },
+    UlClass: { 'default': '', type: String },
+    FirstPageBtnClass: { 'default': '', type: String },
+    LastPageBtnClass: { 'default': '', type: String },
+    OmittedPageClass: { 'default': 'dusabled', type: String }
+  },
   data: function () {
     return {
       FirstPageText: '<<',
@@ -53,9 +78,11 @@ export default {
     }
   },
   mounted: function () {
-    const base = Math.ceil(this.ShowenPages / 2)
-    this.HiddenPageBase.Min = base + 1
-    this.HiddenPageBase.Max = this.MaxPage - base
+    if (this.MaxPage > (this.ShowenPages + 1)) {
+      const base = Math.ceil(this.ShowenPages / 2)
+      this.HiddenPageBase.Min = base + 1
+      this.HiddenPageBase.Max = this.MaxPage - base
+    }
     this.SetPageRange()
   },
   methods: {
@@ -65,22 +92,28 @@ export default {
     },
     SetPageRange: function () {
       let result = []
-      if (this.CurrentPage < this.HiddenPageBase.Min) {
-        for (let i = 1; i <= 1 + (this.ShowenPages - 1); i++) {
-          result.push(i)
-        }
-      } else if (this.CurrentPage > this.HiddenPageBase.Max) {
-        for (let i = this.MaxPage - (this.ShowenPages - 1); i <= this.MaxPage; i++) {
-          result.push(i)
+      if (this.MaxPage > (this.ShowenPages + 1)) {
+        if (this.CurrentPage < this.HiddenPageBase.Min) {
+          for (let i = 1; i <= 1 + (this.ShowenPages - 1); i++) {
+            result.push(i)
+          }
+        } else if (this.CurrentPage > this.HiddenPageBase.Max) {
+          for (let i = this.MaxPage - (this.ShowenPages - 1); i <= this.MaxPage; i++) {
+            result.push(i)
+          }
+        } else {
+          const base = Math.floor(this.ShowenPages / 2)
+          for (let i = base; i >= 1; i--) {
+            result.push(this.CurrentPage - i)
+          }
+          result.push(this.CurrentPage)
+          for (let i = 1; i <= base; i++) {
+            result.push(this.CurrentPage + i)
+          }
         }
       } else {
-        const base = Math.floor(this.ShowenPages / 2)
-        for (let i = base; i >= 1; i--) {
-          result.push(this.CurrentPage - i)
-        }
-        result.push(this.CurrentPage)
-        for (let i = 1; i <= base; i++) {
-          result.push(this.CurrentPage + i)
+        for (let i = 1; i <= this.MaxPage; i++) {
+          result.push(i)
         }
       }
       this.PageRange = result
