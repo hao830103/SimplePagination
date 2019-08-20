@@ -78,17 +78,26 @@ export default {
     }
   },
   mounted: function () {
-    if (this.MaxPage > (this.ShowenPages + 1)) {
-      const base = Math.ceil(this.ShowenPages / 2)
-      this.HiddenPageBase.Min = base + 1
-      this.HiddenPageBase.Max = this.MaxPage - base
-    }
+    this.LimitCompute()
     this.SetPageRange()
+  },
+  watch: {
+    MaxPage: function () {
+      this.LimitCompute()
+      this.ChangePage(1)
+    }
   },
   methods: {
     ChangePage: function (pageNum) {
       this.CurrentPage = pageNum
       this.SetPageRange()
+    },
+    LimitCompute: function () {
+      if (this.MaxPage > (this.ShowenPages + 1)) {
+        const base = Math.ceil(this.ShowenPages / 2)
+        this.HiddenPageBase.Min = base + 1
+        this.HiddenPageBase.Max = this.MaxPage - base
+      }
     },
     SetPageRange: function () {
       let result = []
@@ -149,13 +158,6 @@ a {
 a:hover {
   color: #005580;
   text-decoration: underline;
-}
-
-h2 {
-  padding-top: 20px;
-}
-h2:first-of-type {
-  padding-top: 0;
 }
 ul {
   padding: 0;

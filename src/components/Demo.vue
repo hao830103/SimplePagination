@@ -2,7 +2,7 @@
   <div>
     <div class="DemoBlock">
       <h2>Default</h2>
-      <pagination :MaxPage="6" />
+      <pagination :MaxPage="3" />
     </div>
     <div class="DemoBlock">
       <h2>With First & Last Button</h2>
