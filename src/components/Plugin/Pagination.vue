@@ -2,10 +2,10 @@
   <div :class="OuterDivClass">
     <ul :class="UlClass">
       <li @click="FirstPage" v-if="FirsLastButton" :class="FirstPageBtnClass">
-        <a>{{FirstPageText}}</a>
+        <a v-html="FirstPageBtnHtml"></a>
       </li>
       <li @click="PrevPage" :class="PrevPageBtnClass">
-        <a>{{PrevPageText}}</a>
+        <a v-html="PrevPageBtnHtml"></a>
       </li>
       <li
         @click="FirstPage"
@@ -17,21 +17,23 @@
         :class="OmittedPageClass"
         v-show="(CurrentPage > HiddenPageBase.Min)&&(!FirsLastButton)&&(this.MaxPage > (this.ShowenPages+1))"
       >
-        <a>...</a>
+        <a v-html="OmittedPageHtml"></a>
       </li>
       <li
         v-for="pageNum in PageRange"
         :key="pageNum"
+        :class="[CurrentPage === pageNum ? ActiveClass:'', LiClass]"
         @click="ChangePage(pageNum)"
-        :class="CurrentPage === pageNum ? ActiveClass:''"
       >
-        <a>{{ pageNum }}</a>
+        <a>
+          <span>{{ pageNum }}</span>
+        </a>
       </li>
       <li
         :class="OmittedPageClass"
         v-show="(CurrentPage < HiddenPageBase.Max)&&(!FirsLastButton)&&(this.MaxPage > (this.ShowenPages+1))"
       >
-        <a>...</a>
+        <a v-html="OmittedPageHtml"></a>
       </li>
       <li
         @click="LastPage"
@@ -40,10 +42,10 @@
         <a>{{MaxPage}}</a>
       </li>
       <li @click="NextPage" :class="NextPageBtnClass">
-        <a>{{NextPageText}}</a>
+        <a v-html="NextPageBtnHtml"></a>
       </li>
       <li @click="LastPage" v-if="FirsLastButton" :class="LastPageBtnClass">
-        <a>{{LastPageText}}</a>
+        <a v-html="LastPageBtnHtml"></a>
       </li>
     </ul>
   </div>
@@ -51,26 +53,28 @@
 <script>
 export default {
   props: {
-    FirsLastButton: { 'default': false, type: Boolean },
     MaxPage: { type: Number },
+    ShowenPages: { type: Number },
     ActiveClass: { 'default': 'active', type: String },
-    PrevPageText: { 'default': 'Prev', type: String },
-    NextPageText: { 'default': 'Next', type: String },
+    PrevPageBtnHtml: { 'default': 'Prev', type: String },
+    NextPageBtnHtml: { 'default': 'Next', type: String },
     PrevPageBtnClass: { 'default': '', type: String },
     NextPageBtnClass: { 'default': '', type: String },
     OuterDivClass: { 'default': 'pagination', type: String },
     UlClass: { 'default': '', type: String },
+    LiClass: { 'default': '', type: String },
+    FirsLastButton: { 'default': false, type: Boolean },
     FirstPageBtnClass: { 'default': '', type: String },
     LastPageBtnClass: { 'default': '', type: String },
-    OmittedPageClass: { 'default': 'dusabled', type: String }
+    FirstPageBtnHtml: { 'default': '<<', type: String },
+    LastPageBtnHtml: { 'default': '>>', type: String },
+    OmittedPageClass: { 'default': 'dusabled', type: String },
+    OmittedPageHtml: { 'default': '...', type: String }
   },
   data: function () {
     return {
-      FirstPageText: '<<',
-      LastPageText: '>>',
       PageRange: [],
       CurrentPage: 1,
-      ShowenPages: 5,
       HiddenPageBase: {
         Max: 0,
         Min: 0
@@ -169,9 +173,6 @@ ul {
 }
 .pagination ul {
   display: inline-block;
-  *display: inline;
-  /* IE7 inline-block hack */
-
   *zoom: 1;
   margin-left: 0;
   margin-bottom: 0;
@@ -188,7 +189,8 @@ ul {
 }
 .pagination a {
   float: left;
-  padding: 0 14px;
+  width: 3rem;
+  text-align: center;
   line-height: 34px;
   text-decoration: none;
   border: 1px solid #ddd;

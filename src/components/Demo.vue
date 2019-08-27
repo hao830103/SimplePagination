@@ -1,12 +1,12 @@
 <template>
-  <div>
-    <div class="DemoBlock">
+  <div class="Container">
+    <div>
       <h2>Default</h2>
-      <pagination :MaxPage="3" />
+      <pagination :MaxPage="12" :ShowenPages="3" />
     </div>
-    <div class="DemoBlock">
+    <div>
       <h2>With First & Last Button</h2>
-      <pagination :FirsLastButton="true" :MaxPage="6" />
+      <pagination :FirsLastButton="true" :MaxPage="24" :ShowenPages="7" />
     </div>
   </div>
 </template>
@@ -21,7 +21,8 @@ export default {
 </script>
 
 <style scoped>
-.DemoBlock {
+.Container div {
   margin: 3%;
+  height: 20vh;
 }
 </style>
