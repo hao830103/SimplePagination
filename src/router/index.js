@@ -5,11 +5,9 @@ import Demo from '@/components/Demo'
 Vue.use(Router)
 
 export default new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'Demo',
-      component: Demo
-    }
-  ]
+  routes: [{
+    path: '/',
+    name: 'Demo',
+    component: Demo
+  }]
 })

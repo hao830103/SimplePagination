@@ -9,20 +9,28 @@
       </li>
       <li
         @click="FirstPage"
-        v-if="(CurrentPage >= HiddenPageBase.Min)&&(!FirsLastButton)&&(this.MaxPage > (this.ShowenPages+1))"
+        v-if="
+          CurrentPage >= HiddenPageBase.Min &&
+            !FirsLastButton &&
+            this.MaxPage > this.ShowenPages + 1
+        "
       >
         <a>1</a>
       </li>
       <li
         :class="OmittedPageClass"
-        v-show="(CurrentPage > HiddenPageBase.Min)&&(!FirsLastButton)&&(this.MaxPage > (this.ShowenPages+1))"
+        v-show="
+          CurrentPage > HiddenPageBase.Min &&
+            !FirsLastButton &&
+            this.MaxPage > this.ShowenPages + 1
+        "
       >
         <a v-html="OmittedPageHtml"></a>
       </li>
       <li
         v-for="pageNum in PageRange"
         :key="pageNum"
-        :class="[CurrentPage === pageNum ? ActiveClass:'', LiClass]"
+        :class="[CurrentPage === pageNum ? ActiveClass : '', LiClass]"
         @click="ChangePage(pageNum)"
       >
         <a>
@@ -31,15 +39,23 @@
       </li>
       <li
         :class="OmittedPageClass"
-        v-show="(CurrentPage < HiddenPageBase.Max)&&(!FirsLastButton)&&(this.MaxPage > (this.ShowenPages+1))"
+        v-show="
+          CurrentPage < HiddenPageBase.Max &&
+            !FirsLastButton &&
+            this.MaxPage > this.ShowenPages + 1
+        "
       >
         <a v-html="OmittedPageHtml"></a>
       </li>
       <li
         @click="LastPage"
-        v-if="(CurrentPage <= HiddenPageBase.Max)&&(!FirsLastButton)&&(this.MaxPage > (this.ShowenPages+1))"
+        v-if="
+          CurrentPage <= HiddenPageBase.Max &&
+            !FirsLastButton &&
+            this.MaxPage > this.ShowenPages + 1
+        "
       >
-        <a>{{MaxPage}}</a>
+        <a>{{ MaxPage }}</a>
       </li>
       <li @click="NextPage" :class="NextPageBtnClass">
         <a v-html="NextPageBtnHtml"></a>
@@ -55,21 +71,21 @@ export default {
   props: {
     MaxPage: { type: Number },
     ShowenPages: { type: Number },
-    ActiveClass: { 'default': 'active', type: String },
-    PrevPageBtnHtml: { 'default': 'Prev', type: String },
-    NextPageBtnHtml: { 'default': 'Next', type: String },
-    PrevPageBtnClass: { 'default': '', type: String },
-    NextPageBtnClass: { 'default': '', type: String },
-    OuterDivClass: { 'default': 'pagination', type: String },
-    UlClass: { 'default': '', type: String },
-    LiClass: { 'default': '', type: String },
-    FirsLastButton: { 'default': false, type: Boolean },
-    FirstPageBtnClass: { 'default': '', type: String },
-    LastPageBtnClass: { 'default': '', type: String },
-    FirstPageBtnHtml: { 'default': '<<', type: String },
-    LastPageBtnHtml: { 'default': '>>', type: String },
-    OmittedPageClass: { 'default': 'dusabled', type: String },
-    OmittedPageHtml: { 'default': '...', type: String }
+    ActiveClass: { default: 'active', type: String },
+    PrevPageBtnHtml: { default: 'Prev', type: String },
+    NextPageBtnHtml: { default: 'Next', type: String },
+    PrevPageBtnClass: { default: '', type: String },
+    NextPageBtnClass: { default: '', type: String },
+    OuterDivClass: { default: 'pagination', type: String },
+    UlClass: { default: '', type: String },
+    LiClass: { default: '', type: String },
+    FirsLastButton: { default: false, type: Boolean },
+    FirstPageBtnClass: { default: '', type: String },
+    LastPageBtnClass: { default: '', type: String },
+    FirstPageBtnHtml: { default: '<<', type: String },
+    LastPageBtnHtml: { default: '>>', type: String },
+    OmittedPageClass: { default: 'dusabled', type: String },
+    OmittedPageHtml: { default: '...', type: String }
   },
   data: function () {
     return {
@@ -84,6 +100,7 @@ export default {
   mounted: function () {
     this.LimitCompute()
     this.SetPageRange()
+    this.ChangePage(1)
   },
   watch: {
     MaxPage: function () {
@@ -95,9 +112,10 @@ export default {
     ChangePage: function (pageNum) {
       this.CurrentPage = pageNum
       this.SetPageRange()
+      this.$emit('ChangePage', pageNum)
     },
     LimitCompute: function () {
-      if (this.MaxPage > (this.ShowenPages + 1)) {
+      if (this.MaxPage > this.ShowenPages + 1) {
         const base = Math.ceil(this.ShowenPages / 2)
         this.HiddenPageBase.Min = base + 1
         this.HiddenPageBase.Max = this.MaxPage - base
@@ -105,13 +123,17 @@ export default {
     },
     SetPageRange: function () {
       let result = []
-      if (this.MaxPage > (this.ShowenPages + 1)) {
+      if (this.MaxPage > this.ShowenPages + 1) {
         if (this.CurrentPage < this.HiddenPageBase.Min) {
           for (let i = 1; i <= 1 + (this.ShowenPages - 1); i++) {
             result.push(i)
           }
         } else if (this.CurrentPage > this.HiddenPageBase.Max) {
-          for (let i = this.MaxPage - (this.ShowenPages - 1); i <= this.MaxPage; i++) {
+          for (
+            let i = this.MaxPage - (this.ShowenPages - 1);
+            i <= this.MaxPage;
+            i++
+          ) {
             result.push(i)
           }
         } else {
