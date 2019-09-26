@@ -4,6 +4,8 @@ This is just a simple practice for me.
 
 Pagination is a component we ofen used. And this is based on Vue.js
 
+**[DEMO Page](/https://hao830103.github.io/SimplePagination)**
+
 ![](https://i.imgur.com/fLKvsVs.png)
 
 ## How to use?
